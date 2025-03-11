@@ -1,16 +1,40 @@
-// This is a comment
-
 .const X 0
 .const Y 1
 .const INPUT 2
+.const INSIDE_X 3
+.const INSIDE_Y 4
+.const STARTING_X 50
+.const STARTING_Y 50
 .const size 10
-.const white 9
-.const black 3
+.const player_colour 9
+.const face_colour 15
+.const background_colour 3
+.const max_screen_width 240
+.const max_screen_height 130
 
+
+CPY STARTING_X X
+CPY STARTING_Y Y
+DRW 0 0 255 144 background_colour
 LOG game_started
-
 @loop
-DRW $X $Y size size white
+
+// Draw smiley face
+DRW $X $Y size size player_colour
+CPY $X INSIDE_X
+ADD $INSIDE_X 2 INSIDE_X
+CPY $Y INSIDE_Y
+ADD $INSIDE_Y 2 INSIDE_Y
+DRW $INSIDE_X $INSIDE_Y 2 2 face_colour
+ADD $INSIDE_X 4 INSIDE_X
+DRW $INSIDE_X $INSIDE_Y 2 2 face_colour
+SUB $INSIDE_X 4 INSIDE_X
+ADD $INSIDE_Y 4 INSIDE_Y
+DRW $INSIDE_X $INSIDE_Y 6 4 face_colour
+ADD $INSIDE_X 2 INSIDE_X
+DRW $INSIDE_X $INSIDE_Y 2 2 player_colour
+
+
 
 @await_input
 INP INPUT
@@ -24,28 +48,28 @@ BRE @right_arrow $INPUT 40
 @up_arrow
 LOG player_moved_up
 BNG @await_input $Y 0
-DRW $X $Y size size black
+DRW $X $Y size size background_colour
 SUB $Y 10 Y
 JMP @loop
 
 @left_arrow
 LOG player_moved_left
 BNG @await_input $X 0
-DRW $X $Y size size black
+DRW $X $Y size size background_colour
 SUB $X 10 X
 JMP @loop
 
 @down_arrow
 LOG player_moved_down
-BNL @await_input $Y 130
-DRW $X $Y size size black
+BNL @await_input $Y max_screen_height
+DRW $X $Y size size background_colour
 ADD $Y 10 Y
 JMP @loop
 
 @right_arrow
 LOG player_moved_right
-BNL @await_input $X 240
-DRW $X $Y size size black
+BNL @await_input $X max_screen_width
+DRW $X $Y size size background_colour
 ADD $X 10 X
 JMP @loop
 
