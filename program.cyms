@@ -1,6 +1,52 @@
 // This is a comment
 
+.const X 0
+.const Y 1
+.const INPUT 2
+.const size 10
+.const white 9
+.const black 3
+
+LOG game_started
+
 @loop
-LOG looping again
+DRW $X $Y size size white
+
+@await_input
+INP INPUT
+BRL @await_input $INPUT 37
+BRG @await_input $INPUT 40
+BRE @up_arrow $INPUT 37
+BRE @left_arrow $INPUT 38
+BRE @down_arrow $INPUT 39
+BRE @right_arrow $INPUT 40
+
+@up_arrow
+LOG player_moved_up
+BNG @await_input $Y 0
+DRW $X $Y size size black
+SUB $Y 10 Y
 JMP @loop
+
+@left_arrow
+LOG player_moved_left
+BNG @await_input $X 0
+DRW $X $Y size size black
+SUB $X 10 X
+JMP @loop
+
+@down_arrow
+LOG player_moved_down
+BNL @await_input $Y 130
+DRW $X $Y size size black
+ADD $Y 10 Y
+JMP @loop
+
+@right_arrow
+LOG player_moved_right
+BNL @await_input $X 240
+DRW $X $Y size size black
+ADD $X 10 X
+JMP @loop
+
 HLT

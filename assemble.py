@@ -101,7 +101,6 @@ for line in lines:
 schem.setBlock((-2, 0, 0), 'command_block[facing=up]{Command:"say Killing all markers"}')
 schem.setBlock((-2, 1, -0), 'chain_command_block[facing=up]{Command:"kill @e[type=marker]",auto:1b}')
 
-modeMapping = {"#": 1, "$": 2}
 print(instructions)
 print(constants)
 for index, instruction in enumerate(instructions):
@@ -109,17 +108,17 @@ for index, instruction in enumerate(instructions):
     modes = [0] * 5
 
     for i in range(1, 6):
-        print(instruction[i])
+        modes[i - 1] += instruction[i].count('#')
+        modes[i - 1] += instruction[i].count('$') * 2
+        instruction[i] = instruction[i].replace('$', '').replace('#', '')
         if instruction[i] in constants:
+            print(f"replacing {instruction[i]} with {constants[instruction[i]]}")
             instruction[i] = constants[instruction[i]]
 
         for character in instruction[i]:
-            if character in modeMapping:
-                modes[i - 1] += modeMapping[character]
-            elif not (character.isdigit() or character == '-'):
-                print(f"Error on line {fileLineNumber}: Invalid argument {character} for {instruction[0]}")
+            if not (character.isdigit() or character == '-'):
+                print(f"Error: Invalid argument {character} for {instruction[0]}")
                 sys.exit(1)
-        instruction[i] = instruction[i].replace('$', '').replace('#', '')
     command = f'summon marker 16 {index} 0 {{Tags:[inst,persistent],CustomName:{instruction[6]},data:{{opcode:{opcode},operand1:{instruction[1]},operand2:{instruction[2]},operand3:{instruction[3]},operand4:{instruction[4]},operand5:{instruction[5]},mode1:{modes[0]},mode2:{modes[1]},mode3:{modes[2]},mode4:{modes[3]},mode5:{modes[4]}}}}}'
     schem.setBlock((-2 -index // 300, index % 300 + 1, 2), f'chain_command_block[facing=up]{{Command:"{command}",auto:1b}}')
 
