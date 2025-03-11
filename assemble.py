@@ -1,13 +1,55 @@
 import mcschematic
 import sys
+import json
 from pathlib import Path
+
+# Config file path
+CONFIG_FILE = Path("cyms_assembler_config.json")
+
+def save_config(config):
+    with open(CONFIG_FILE, 'w') as f:
+        json.dump(config, f)
+
+def load_config():
+    if CONFIG_FILE.exists():
+        try:
+            with open(CONFIG_FILE, 'r') as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            return {"output_path": ""}
+    return {"output_path": ""}
 
 schem = mcschematic.MCSchematic()
 
-if len(sys.argv) > 1:
+config = load_config()
+
+# Process CLI arguments
+if len(sys.argv) == 2:
     filePath = sys.argv[1]
+
+    # Check if there is a saved output path
+    if not config["output_path"]:
+        print("No saved output path found. Please specify an output path:")
+        print("Usage: python assemble.py <input_file> <output_file>")
+        sys.exit(1)
+
+    outputPath = config["output_path"]
+    print(f"Using saved output path: {outputPath}")
+
+elif len(sys.argv) == 3:
+    filePath = sys.argv[1]
+    outputPath = str(Path(sys.argv[2]).resolve())
+
+    # Save the output path for future use
+    config["output_path"] = outputPath
+    save_config(config)
+    print(f"Saved output path for future use: {outputPath}")
+
 else:
-    filePath = "program.cyms"
+    print("Usage:")
+    print("  First time: python assemble.py <input_file> <output_file>")
+    print("  Subsequent times: python assemble.py <input_file>")
+    sys.exit(1)
 
 file = open(filePath, "r")
 lines = file.readlines()
@@ -112,7 +154,6 @@ for index, instruction in enumerate(instructions):
         modes[i - 1] += instruction[i].count('$') * 2
         instruction[i] = instruction[i].replace('$', '').replace('#', '')
         if instruction[i] in constants:
-            print(f"replacing {instruction[i]} with {constants[instruction[i]]}")
             instruction[i] = constants[instruction[i]]
 
         for character in instruction[i]:
@@ -134,7 +175,6 @@ for i in range(1, 6):
 schem.setBlock((-2, 12, 4), 'chain_command_block[facing=up]{Command:"execute as @e[tag=inst] run data remove entity @s data",auto:1b}')
 
 schemName = Path(filePath).stem
-
-schem.save('/home/user/.local/share/PrismLauncher/instances/Adrenaline(1)/minecraft/config/worldedit/schematics/',
-            schemName, version=mcschematic.Version.JE_1_20_1)
-print(f'Schematic saved as {schemName}')
+# /home/user/.local/share/PrismLauncher/instances/Adrenaline(1)/minecraft/config/worldedit/schematics/
+schem.save(outputPath, schemName, version=mcschematic.Version.JE_1_20_1)
+print(f'Schematic saved as "{schemName}"')
