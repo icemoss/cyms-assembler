@@ -140,8 +140,12 @@ for line in lines:
         instructions.append(instruction)
         lineNumber += 1
 
-schem.setBlock((-2, 0, 0), 'command_block[facing=up]{Command:"say Killing all markers"}')
-schem.setBlock((-2, 1, -0), 'chain_command_block[facing=up]{Command:"kill @e[type=marker]",auto:1b}')
+
+MAX_COMMANDS_PER_TOWER = 300
+X_OFFSET = -2
+
+schem.setBlock((X_OFFSET, 0, 0), 'command_block[facing=up]{Command:"say Killing all markers"}')
+schem.setBlock((X_OFFSET, 1, -0), 'chain_command_block[facing=up]{Command:"kill @e[type=marker]",auto:1b}')
 
 print(instructions)
 print(constants)
@@ -161,18 +165,18 @@ for index, instruction in enumerate(instructions):
                 print(f"Error: Invalid argument {character} for {instruction[0]}")
                 sys.exit(1)
     command = f'summon marker 16 {index} 0 {{Tags:[inst,persistent],CustomName:{instruction[6]},data:{{opcode:{opcode},operand1:{instruction[1]},operand2:{instruction[2]},operand3:{instruction[3]},operand4:{instruction[4]},operand5:{instruction[5]},mode1:{modes[0]},mode2:{modes[1]},mode3:{modes[2]},mode4:{modes[3]},mode5:{modes[4]}}}}}'
-    schem.setBlock((-2 -index // 300, index % 300 + 1, 2), f'chain_command_block[facing=up]{{Command:"{command}",auto:1b}}')
+    schem.setBlock((X_OFFSET -index // MAX_COMMANDS_PER_TOWER, index % MAX_COMMANDS_PER_TOWER + 1, 2), f'chain_command_block[facing=up]{{Command:"{command}",auto:1b}}')
 
-for i in range(len(instructions) // 300 + 1):
-    schem.setBlock((-2 -i, 0, 2), f'command_block[facing=up]{{Command:"say Instruction Tower {i + 1}"}}')
+for i in range(len(instructions) // MAX_COMMANDS_PER_TOWER + 1):
+    schem.setBlock((X_OFFSET -i, 0, 2), f'command_block[facing=up]{{Command:"say Instruction Tower {i + 1}"}}')
 
-schem.setBlock((-2, 0, 4), 'command_block[facing=up]{Command:"say Setting Scoreboards"}')
-schem.setBlock((-2, 1, 4), 'chain_command_block[facing=up]{Command:"execute as @e[tag=inst] store result score @s opcode run data get entity @s data.opcode",auto:1b}')
+schem.setBlock((X_OFFSET, 0, 4), 'command_block[facing=up]{Command:"say Setting Scoreboards"}')
+schem.setBlock((X_OFFSET, 1, 4), 'chain_command_block[facing=up]{Command:"execute as @e[tag=inst] store result score @s opcode run data get entity @s data.opcode",auto:1b}')
 for i in range(1, 6):
-    schem.setBlock((-2, i + 1, 4), f'chain_command_block[facing=up]{{Command:"execute as @e[tag=inst] store result score @s operand{i} run data get entity @s data.operand{i}",auto:1b}}')
+    schem.setBlock((X_OFFSET, i + 1, 4), f'chain_command_block[facing=up]{{Command:"execute as @e[tag=inst] store result score @s operand{i} run data get entity @s data.operand{i}",auto:1b}}')
 for i in range(1, 6):
-    schem.setBlock((-2, i + 6, 4), f'chain_command_block[facing=up]{{Command:"execute as @e[tag=inst] store result score @s mode{i} run data get entity @s data.mode{i}",auto:1b}}')
-schem.setBlock((-2, 12, 4), 'chain_command_block[facing=up]{Command:"execute as @e[tag=inst] run data remove entity @s data",auto:1b}')
+    schem.setBlock((X_OFFSET, i + 6, 4), f'chain_command_block[facing=up]{{Command:"execute as @e[tag=inst] store result score @s mode{i} run data get entity @s data.mode{i}",auto:1b}}')
+schem.setBlock((X_OFFSET, 12, 4), 'chain_command_block[facing=up]{Command:"execute as @e[tag=inst] run data remove entity @s data",auto:1b}')
 
 schemName = Path(filePath).stem
 # /home/user/.local/share/PrismLauncher/instances/Adrenaline(1)/minecraft/config/worldedit/schematics/
