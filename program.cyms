@@ -1,10 +1,6 @@
 // This is a comment
 
-.const LUCKY_NUMBER 11
-
 @loop
-RNG 0
-MOD $0 100000 0
-OUT $0
-BNE @loop $0 LUCKY_NUMBER
+LOG looping again
+JMP @loop
 HLT
