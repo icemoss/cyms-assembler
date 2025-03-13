@@ -60,7 +60,10 @@ unprocessedInstructions = []
 instructions = []
 fileLineNumber = 0
 lineNumber = 0
-constants = {}
+constants = {
+    "X": -1, # Index register address
+    "T": -2 # Time register address
+}
 
 opcodes = {
     "NOP": ["0", 0],
