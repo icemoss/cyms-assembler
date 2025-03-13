@@ -3,6 +3,7 @@ import sys
 import json
 from pathlib import Path
 
+DEBUG = False
 # Config file path
 CONFIG_FILE = Path("cyms_assembler_config.json")
 
@@ -147,8 +148,10 @@ X_OFFSET = -2
 schem.setBlock((X_OFFSET, 0, 0), 'command_block[facing=up]{Command:"say Killing all markers"}')
 schem.setBlock((X_OFFSET, 1, -0), 'chain_command_block[facing=up]{Command:"kill @e[type=marker]",auto:1b}')
 
-print(instructions)
-print(constants)
+if DEBUG:
+    print(instructions)
+    print(constants)
+
 for index, instruction in enumerate(instructions):
     opcode = opcodes[instruction[0]][0]
     modes = [0] * 5
@@ -164,6 +167,9 @@ for index, instruction in enumerate(instructions):
             if not (character.isdigit() or character == '-'):
                 print(f"Error: Invalid argument {character} for {instruction[0]}")
                 sys.exit(1)
+
+    if DEBUG:
+        print(index, opcode, instruction)
     command = f'summon marker 16 {index} 0 {{Tags:[inst,persistent],CustomName:{instruction[6]},data:{{opcode:{opcode},operand1:{instruction[1]},operand2:{instruction[2]},operand3:{instruction[3]},operand4:{instruction[4]},operand5:{instruction[5]},mode1:{modes[0]},mode2:{modes[1]},mode3:{modes[2]},mode4:{modes[3]},mode5:{modes[4]}}}}}'
     schem.setBlock((X_OFFSET -index // MAX_COMMANDS_PER_TOWER, index % MAX_COMMANDS_PER_TOWER + 1, 2), f'chain_command_block[facing=up]{{Command:"{command}",auto:1b}}')
 
