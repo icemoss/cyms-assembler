@@ -163,13 +163,13 @@ for line in lines:
         if len(parts) != 3:
             print(f"Error on line {fileLineNumber}: Invalid syntax {line}")
             sys.exit(1)
-        constants[parts[1]] = parts[2]
+        constants[parts[1]] = int(parts[2])
     elif line.startswith("@"):
         parts = line.split(" ")
         if len(parts) != 1 or len(parts[0]) == 1:
             print(f"Error on line {fileLineNumber}: Invalid syntax {line}")
             sys.exit(1)
-        constants[parts[0]] = str(lineNumber)
+        constants[parts[0]] = lineNumber
     else:
         unprocessedInstructions.append(line)
         lineNumber += 1
