@@ -1,5 +1,4 @@
-CPY 0 0
 @loop
-INC 0
+ADD $0 3 0
 OUT $0
 JMP @loop
